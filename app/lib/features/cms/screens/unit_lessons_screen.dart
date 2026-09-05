@@ -36,7 +36,7 @@ class UnitLessonsScreen extends ConsumerWidget {
     final values = await showLessonFormDialog(context, existing: lesson);
     if (values == null) return;
     try {
-      await updateLesson(lesson.id, values);
+      await ref.read(contentRepositoryProvider).updateLesson(lesson.id, values);
       ref.invalidate(cmsLessonsProvider(unit.id));
     } catch (e) {
       if (context.mounted) _showError(context, 'Could not update lesson', e);

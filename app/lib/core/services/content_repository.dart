@@ -47,12 +47,19 @@ class ContentRepository {
   // --- Teacher CMS mutations ---
 
   Future<CurriculumUnit> createUnit(CurriculumUnit unit) async {
-    final row = await _client.from('curriculum_units').insert(unit.toMap()).select().single();
+    final columns = CurriculumUnit.mapToColumns(
+      unit.toMap(),
+      newSlug: CurriculumUnit.slugify(unit.title),
+    );
+    final row = await _client.from('curriculum_units').insert(columns).select().single();
     return CurriculumUnit.fromMap(row);
   }
 
+  /// [changes] uses the same app-facing keys as [CurriculumUnit.toMap]
+  /// (e.g. from the CMS unit form), translated to real column names here.
   Future<void> updateUnit(String id, Map<String, dynamic> changes) async {
-    await _client.from('curriculum_units').update(changes).eq('id', id);
+    final columns = CurriculumUnit.mapToColumns(changes);
+    await _client.from('curriculum_units').update(columns).eq('id', id);
   }
 
   Future<void> deleteUnit(String id) async {
@@ -62,6 +69,10 @@ class ContentRepository {
   Future<Lesson> createLesson(Lesson lesson) async {
     final row = await _client.from('lessons').insert(lesson.toMap()).select().single();
     return Lesson.fromMap(row);
+  }
+
+  Future<void> updateLesson(String id, Map<String, dynamic> changes) async {
+    await _client.from('lessons').update(changes).eq('id', id);
   }
 
   Future<void> deleteLesson(String id) async {

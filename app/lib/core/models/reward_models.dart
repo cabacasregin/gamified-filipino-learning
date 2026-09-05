@@ -38,7 +38,11 @@ class Reward extends Equatable {
       studentId: map['student_id'] as String,
       name: map['name'] as String,
       description: (map['description'] as String?) ?? '',
-      emoji: (map['emoji'] as String?) ?? '🎁',
+      // The `rewards` table's column is named `icon` (matching lesson_items'
+      // `emoji` column's sibling naming elsewhere isn't consistent — this
+      // is just what the schema calls it); kept as `emoji` on the Dart side
+      // since that's clearer for a value that's always an emoji string.
+      emoji: (map['icon'] as String?) ?? '🎁',
       pointCost: map['point_cost'] as int,
       active: (map['active'] as bool?) ?? true,
     );
@@ -52,6 +56,18 @@ class Reward extends Equatable {
         'point_cost': pointCost,
         'active': active,
       };
+
+  /// Translates an app-facing field map (as produced by [toMap] / the
+  /// rewards UI, which uses `emoji`) into real `rewards` column names
+  /// (`icon`). Only translates keys that are present, so it's safe to use
+  /// for partial `update()` payloads too.
+  static Map<String, dynamic> mapToColumns(Map<String, dynamic> appFields) {
+    final columns = Map<String, dynamic>.from(appFields);
+    if (columns.containsKey('emoji')) {
+      columns['icon'] = columns.remove('emoji');
+    }
+    return columns;
+  }
 
   @override
   List<Object?> get props =>

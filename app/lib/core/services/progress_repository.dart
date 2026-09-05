@@ -42,15 +42,19 @@ class ProgressRepository {
   }
 
   /// Points earned per day for the last [days] days, for a simple trend
-  /// chart on the dashboards.
+  /// chart on the dashboards. Returns `{'points': ..., 'created_at': ...}`
+  /// rows — `points_transactions`' actual column is `delta`, renamed here
+  /// so callers don't need to know that storage detail.
   Future<List<Map<String, dynamic>>> fetchDailyPoints(String studentId, {int days = 14}) async {
     final since = DateTime.now().subtract(Duration(days: days)).toIso8601String();
     final rows = await _client
         .from('points_transactions')
-        .select('points, created_at')
+        .select('delta, created_at')
         .eq('student_id', studentId)
         .gte('created_at', since)
         .order('created_at');
-    return List<Map<String, dynamic>>.from(rows);
+    return List<Map<String, dynamic>>.from(rows)
+        .map((r) => {'points': r['delta'], 'created_at': r['created_at']})
+        .toList();
   }
 }

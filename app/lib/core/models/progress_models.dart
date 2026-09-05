@@ -40,7 +40,7 @@ class PointsTransaction extends Equatable {
       studentId: map['student_id'] as String,
       sourceType: pointsSourceFromString(map['source_type'] as String),
       sourceId: map['source_id'] as String?,
-      points: map['points'] as int,
+      points: map['delta'] as int, // column is named `delta` in points_transactions
       note: map['note'] as String?,
       createdAt: DateTime.parse(map['created_at'] as String),
     );
@@ -48,6 +48,19 @@ class PointsTransaction extends Equatable {
 
   @override
   List<Object?> get props => [id, studentId, sourceType, sourceId, points, note, createdAt];
+}
+
+/// Server-verified outcome of one `record_assessment_attempt` RPC call —
+/// see `PointsRepository.recordAssessmentAttempt` for why callers must
+/// branch UI feedback on this rather than their own local guess.
+class AssessmentResult extends Equatable {
+  final bool isCorrect;
+  final int pointsAwarded;
+
+  const AssessmentResult({required this.isCorrect, required this.pointsAwarded});
+
+  @override
+  List<Object?> get props => [isCorrect, pointsAwarded];
 }
 
 /// Mirrors `assessment_attempts`.

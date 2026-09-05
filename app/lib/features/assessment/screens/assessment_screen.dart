@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../core/models/curriculum_models.dart';
+import '../../../core/models/progress_models.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/answer_matcher.dart';
@@ -116,14 +117,14 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
     }
     if (!mounted) return;
 
-    final isCorrect = transcript != null && AnswerMatcher.isCorrect(transcript, item);
+    final clientGuessedCorrect = transcript != null && AnswerMatcher.isCorrect(transcript, item);
 
-    int awarded = 0;
+    AssessmentResult result = AssessmentResult(isCorrect: clientGuessedCorrect, pointsAwarded: 0);
     try {
-      awarded = await ref.read(pointsRepositoryProvider).recordAssessmentAttempt(
+      result = await ref.read(pointsRepositoryProvider).recordAssessmentAttempt(
             lessonItemId: item.id,
             transcript: transcript ?? '',
-            isCorrect: isCorrect,
+            clientGuessedCorrect: clientGuessedCorrect,
           );
     } catch (_) {
       // Attempt history / points write failed (e.g. offline) — still give
@@ -131,11 +132,16 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
     }
     if (!mounted) return;
 
-    if (isCorrect) {
+    // Branch on the SERVER's verdict, not the local fuzzy guess, so what
+    // the learner sees always matches what's recorded and rewarded (the
+    // server checks for an exact match against filipino_text/accepted
+    // variants; the local AnswerMatcher is more lenient and is only used
+    // to pick a sensible fallback if the RPC call itself fails).
+    if (result.isCorrect) {
       setState(() {
         _isListening = false;
-        _sessionPoints += awarded;
-        _lastAwarded = awarded;
+        _sessionPoints += result.pointsAwarded;
+        _lastAwarded = result.pointsAwarded;
         _correctItemIds.add(item.id);
         _celebrating = true;
       });

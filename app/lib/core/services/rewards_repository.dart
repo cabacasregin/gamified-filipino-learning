@@ -32,16 +32,16 @@ class RewardsRepository {
   /// Parent-only (enforced by RLS: `parent_id` must be the caller and
   /// `student_id` must be one of their linked children).
   Future<Reward> createReward(Reward reward) async {
-    final row = await _client
-        .from('rewards')
-        .insert({...reward.toMap(), 'parent_id': reward.parentId})
-        .select()
-        .single();
+    final columns = Reward.mapToColumns({...reward.toMap(), 'parent_id': reward.parentId});
+    final row = await _client.from('rewards').insert(columns).select().single();
     return Reward.fromMap(row);
   }
 
+  /// [changes] uses the same app-facing keys as [Reward.toMap] (e.g. from
+  /// the parent rewards UI), translated to real column names here.
   Future<void> updateReward(String id, Map<String, dynamic> changes) async {
-    await _client.from('rewards').update(changes).eq('id', id);
+    final columns = Reward.mapToColumns(changes);
+    await _client.from('rewards').update(columns).eq('id', id);
   }
 
   Future<void> deleteReward(String id) async {

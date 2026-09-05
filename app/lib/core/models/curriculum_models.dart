@@ -1,6 +1,12 @@
 import 'package:equatable/equatable.dart';
 
 /// A top-level MATATAG-aligned strand, e.g. "Alpabetong Filipino".
+///
+/// The `curriculum_units` table stores the English/Filipino titles as
+/// `title_en`/`title_fil` and also has a stable, unique `slug` the app
+/// never shows or edits. [toMap]/[fromMap] use app-facing key names
+/// (`title`, `title_filipino`, ...) — see [mapToColumns] for the
+/// translation to actual column names used when talking to Supabase.
 class CurriculumUnit extends Equatable {
   final String id;
   final String title;
@@ -21,8 +27,8 @@ class CurriculumUnit extends Equatable {
   factory CurriculumUnit.fromMap(Map<String, dynamic> map) {
     return CurriculumUnit(
       id: map['id'] as String,
-      title: map['title'] as String,
-      titleFilipino: (map['title_filipino'] as String?) ?? '',
+      title: map['title_en'] as String,
+      titleFilipino: (map['title_fil'] as String?) ?? '',
       description: (map['description'] as String?) ?? '',
       iconEmoji: (map['icon_emoji'] as String?) ?? '📘',
       sortOrder: (map['sort_order'] as int?) ?? 0,
@@ -36,6 +42,35 @@ class CurriculumUnit extends Equatable {
         'icon_emoji': iconEmoji,
         'sort_order': sortOrder,
       };
+
+  /// Translates an app-facing field map (as produced by [toMap] / the CMS
+  /// unit form) into the actual `curriculum_units` column names. Pass
+  /// [newSlug] on insert only — `slug` is otherwise left alone so editing a
+  /// unit's title never changes its stable identifier.
+  static Map<String, dynamic> mapToColumns(Map<String, dynamic> appFields, {String? newSlug}) {
+    return {
+      if (appFields.containsKey('title')) 'title_en': appFields['title'],
+      if (appFields.containsKey('title_filipino')) 'title_fil': appFields['title_filipino'],
+      if (appFields.containsKey('description')) 'description': appFields['description'],
+      if (appFields.containsKey('icon_emoji')) 'icon_emoji': appFields['icon_emoji'],
+      if (appFields.containsKey('sort_order')) 'sort_order': appFields['sort_order'],
+      if (newSlug != null) 'slug': newSlug,
+    };
+  }
+
+  /// A URL-safe, reasonably-unique slug derived from the English title
+  /// (the CMS form doesn't collect one directly) — e.g. "Mga Numero" plus a
+  /// short random suffix so re-creating a unit with the same title never
+  /// collides with `slug`'s UNIQUE constraint.
+  static String slugify(String title) {
+    final base = title
+        .toLowerCase()
+        .trim()
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+        .replaceAll(RegExp(r'^-+|-+$'), '');
+    final suffix = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+    return base.isEmpty ? suffix : '$base-$suffix';
+  }
 
   @override
   List<Object?> get props => [id, title, titleFilipino, description, iconEmoji, sortOrder];

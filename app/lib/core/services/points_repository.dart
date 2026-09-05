@@ -24,35 +24,68 @@ class PointsRepository {
         .from('points_transactions')
         .stream(primaryKey: ['id'])
         .eq('student_id', studentId)
-        .map((rows) => rows.fold<int>(0, (sum, r) => sum + (r['points'] as int)));
+        .map((rows) => rows.fold<int>(0, (sum, r) => sum + (r['delta'] as int)));
   }
 
   /// Returns the points actually awarded (0 if already completed before).
+  ///
+  /// `record_learn_completion` is declared `returns table(already_completed
+  /// boolean, points_awarded integer)` in Postgres, which PostgREST (and so
+  /// supabase-dart) always surfaces as a list of row-objects — one row in
+  /// this case — never a bare scalar, even though the function logically
+  /// returns a single value per call.
   Future<int> recordLearnCompletion(String lessonItemId) async {
     final result = await _client.rpc(
       'record_learn_completion',
       params: {'p_lesson_item_id': lessonItemId},
     );
-    return (result as int?) ?? 0;
+    return _firstRowIntField(result, 'points_awarded');
   }
 
-  /// Records a spoken-assessment attempt and returns the points awarded
-  /// (0 if incorrect, or if points for this item were already earned this
-  /// session).
-  Future<int> recordAssessmentAttempt({
+  /// Records a spoken-assessment attempt and returns the SERVER's verdict:
+  /// [AssessmentResult.isCorrect] (recomputed server-side against
+  /// `filipino_text`/`accepted_variants` — exact match only, no fuzzy
+  /// matching) and [AssessmentResult.pointsAwarded] (0 if incorrect, or if
+  /// points for this item were already earned previously).
+  ///
+  /// [clientGuessedCorrect] (from [AnswerMatcher]'s fuzzier, edit-distance
+  /// -tolerant matching) is passed along for the server's audit trail only
+  /// — it is NOT trusted for scoring, and callers must branch UI feedback
+  /// on the returned [AssessmentResult.isCorrect], not on their own guess,
+  /// so what the learner sees always matches what's recorded and rewarded.
+  Future<AssessmentResult> recordAssessmentAttempt({
     required String lessonItemId,
     required String transcript,
-    required bool isCorrect,
+    required bool clientGuessedCorrect,
   }) async {
     final result = await _client.rpc(
       'record_assessment_attempt',
       params: {
         'p_lesson_item_id': lessonItemId,
         'p_transcript': transcript,
-        'p_is_correct': isCorrect,
+        'p_is_correct': clientGuessedCorrect,
       },
     );
-    return (result as int?) ?? 0;
+    if (result is List && result.isNotEmpty && result.first is Map) {
+      final row = result.first as Map;
+      return AssessmentResult(
+        isCorrect: row['is_correct'] as bool? ?? false,
+        pointsAwarded: row['points_awarded'] as int? ?? 0,
+      );
+    }
+    // RPC call failed before returning (caller already wraps this in
+    // try/catch for the offline case) or returned an unexpected shape —
+    // fall back to the client's own guess so the UI still has something
+    // reasonable to show, with zero points since nothing was recorded.
+    return AssessmentResult(isCorrect: clientGuessedCorrect, pointsAwarded: 0);
+  }
+
+  int _firstRowIntField(dynamic result, String field) {
+    if (result is List && result.isNotEmpty) {
+      final row = result.first;
+      if (row is Map && row[field] is int) return row[field] as int;
+    }
+    return 0;
   }
 
   Future<List<AssessmentAttempt>> fetchAttemptsForStudent(String studentId) async {
