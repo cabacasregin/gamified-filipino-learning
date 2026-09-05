@@ -11,7 +11,7 @@ final _parentChildrenProvider = FutureProvider<List<Map<String, dynamic>>>((ref)
 });
 
 final _childRewardsProvider = FutureProvider.family<List<Reward>, String>((ref, childId) {
-  return ref.watch(rewardsRepositoryProvider).fetchRewardsForStudent(childId);
+  return ref.watch(rewardsRepositoryProvider).fetchAllRewardsForStudent(childId);
 });
 
 final _childRedemptionsProvider =

@@ -6,12 +6,25 @@ import 'supabase_service.dart';
 class RewardsRepository {
   final SupabaseClient _client = SupabaseService.client;
 
+  /// Active rewards only — what the student sees in their own catalog.
   Future<List<Reward>> fetchRewardsForStudent(String studentId) async {
     final rows = await _client
         .from('rewards')
         .select()
         .eq('student_id', studentId)
         .eq('active', true)
+        .order('point_cost');
+    return rows.map((r) => Reward.fromMap(r)).toList();
+  }
+
+  /// All of a child's rewards regardless of `active`, for the parent's
+  /// management screen (they need to see and re-enable a deactivated
+  /// reward, not just the ones currently visible to the student).
+  Future<List<Reward>> fetchAllRewardsForStudent(String studentId) async {
+    final rows = await _client
+        .from('rewards')
+        .select()
+        .eq('student_id', studentId)
         .order('point_cost');
     return rows.map((r) => Reward.fromMap(r)).toList();
   }
