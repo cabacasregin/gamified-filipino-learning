@@ -25,8 +25,12 @@
 -- Ng, each paired with a representative word a beginner would recognize.
 -- ---------------------------------------------------------------------------
 with unit_row as (
-  insert into public.curriculum_units (title_en, title_fil, slug, sort_order)
-  values ('Filipino Alphabet', 'Alpabetong Filipino', 'alpabetong-filipino', 1)
+  insert into public.curriculum_units (title_en, title_fil, slug, description, icon_emoji, sort_order)
+  values (
+    'Filipino Alphabet', 'Alpabetong Filipino', 'alpabetong-filipino',
+    'Learn the modern Filipino alphabet, from Aa to Zz plus Ñ and Ng.',
+    '🔤', 1
+  )
   on conflict (slug) do update set title_en = excluded.title_en
   returning id
 ),
@@ -73,8 +77,12 @@ from lesson_row, (values
 -- Unit 2: Mga Numero (Numbers 1-20)
 -- ---------------------------------------------------------------------------
 with unit_row as (
-  insert into public.curriculum_units (title_en, title_fil, slug, sort_order)
-  values ('Numbers', 'Mga Numero', 'mga-numero', 2)
+  insert into public.curriculum_units (title_en, title_fil, slug, description, icon_emoji, sort_order)
+  values (
+    'Numbers', 'Mga Numero', 'mga-numero',
+    'Count from isa to dalawampu (1 to 20) in Filipino.',
+    '🔢', 2
+  )
   on conflict (slug) do update set title_en = excluded.title_en
   returning id
 ),
@@ -113,8 +121,12 @@ from lesson_row, (values
 -- Unit 3: Mga Hugis (Shapes)
 -- ---------------------------------------------------------------------------
 with unit_row as (
-  insert into public.curriculum_units (title_en, title_fil, slug, sort_order)
-  values ('Shapes', 'Mga Hugis', 'mga-hugis', 3)
+  insert into public.curriculum_units (title_en, title_fil, slug, description, icon_emoji, sort_order)
+  values (
+    'Shapes', 'Mga Hugis', 'mga-hugis',
+    'Recognize and name basic shapes like bilog, parisukat, and tatsulok.',
+    '🔺', 3
+  )
   on conflict (slug) do update set title_en = excluded.title_en
   returning id
 ),
@@ -141,8 +153,12 @@ from lesson_row, (values
 -- Unit 4: Mga Kulay (Colors)
 -- ---------------------------------------------------------------------------
 with unit_row as (
-  insert into public.curriculum_units (title_en, title_fil, slug, sort_order)
-  values ('Colors', 'Mga Kulay', 'mga-kulay', 4)
+  insert into public.curriculum_units (title_en, title_fil, slug, description, icon_emoji, sort_order)
+  values (
+    'Colors', 'Mga Kulay', 'mga-kulay',
+    'Name the colors of the rainbow and everyday objects in Filipino.',
+    '🎨', 4
+  )
   on conflict (slug) do update set title_en = excluded.title_en
   returning id
 ),

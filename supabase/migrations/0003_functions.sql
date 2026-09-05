@@ -124,11 +124,15 @@ begin
       )
     );
 
+  -- Table alias + column-qualified reference to aa.is_correct is required
+  -- here: this function's OUT parameter is also named `is_correct` (see the
+  -- `returns table (...)` clause), and PL/pgSQL would otherwise resolve a
+  -- bare `is_correct` to that variable instead of the table column.
   select exists (
-    select 1 from public.assessment_attempts
-    where student_id = v_student_id
-      and lesson_item_id = p_lesson_item_id
-      and is_correct = true
+    select 1 from public.assessment_attempts aa
+    where aa.student_id = v_student_id
+      and aa.lesson_item_id = p_lesson_item_id
+      and aa.is_correct = true
   ) into v_already_correct;
 
   if v_computed_correct and not v_already_correct then

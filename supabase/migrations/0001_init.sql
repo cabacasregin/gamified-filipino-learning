@@ -163,6 +163,12 @@ create table public.curriculum_units (
   title_en    text not null,          -- e.g. "Filipino Alphabet"
   title_fil   text not null,          -- e.g. "Alpabetong Filipino"
   slug        text not null unique,   -- e.g. "alpabetong-filipino"
+  -- Short blurb shown on the unit card in both the student app and the CMS
+  -- edit form, e.g. "Learn the modern Filipino alphabet".
+  description text,
+  -- Single emoji shown large on the student's unit-picker card. Defaults to
+  -- a generic book so a unit created without one still renders sensibly.
+  icon_emoji  text not null default '📘',
   sort_order  integer not null default 0,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
