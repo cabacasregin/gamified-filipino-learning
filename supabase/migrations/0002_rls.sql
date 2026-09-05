@@ -9,8 +9,8 @@
 --   * "a student can only ever see/act on their own rows".
 --   * "a parent can see/act on rows belonging to students in
 --     parent_children for them".
---   * "a teacher can see rows belonging to students whose profiles.class_id
---     points at a class that teacher owns".
+--   * "a teacher can see rows belonging to students enrolled (via
+--     class_students) in a class that teacher owns".
 --   * Ledger-ish tables (points_transactions, and to a lesser extent
 --     learn_completions / assessment_attempts) grant NO insert/update
 --     policy to `authenticated` at all -- the only way to add rows is
@@ -18,7 +18,87 @@
 --     run as the table owner and therefore bypass RLS. This is what stops a
 --     student from e.g. inserting a fake points_transactions row worth a
 --     million points, or an assessment_attempts row claiming is_correct.
+--
+-- Why the helper functions below exist (read this before "simplifying" a
+-- policy back to an inline join): `classes` and `class_students` each need
+-- to check facts about the other table (a class's policy needs to know if
+-- the caller is enrolled in it; class_students' policy needs to know if the
+-- caller teaches the class a row belongs to). Writing that as a plain
+-- inline EXISTS subquery on both sides creates a genuine infinite loop --
+-- Postgres has to evaluate class_students' RLS policy to answer classes'
+-- policy, which requires evaluating classes' RLS policy, which requires
+-- class_students' policy again, forever ("infinite recursion detected in
+-- policy for relation ..."). This is a well-known Postgres/Supabase RLS
+-- pitfall whenever two RLS-protected tables reference each other.
+--
+-- The fix: wrap each cross-table fact in a small SECURITY DEFINER function.
+-- Such a function runs as its owner (bypassing RLS for the query inside
+-- it), so calling it from a policy answers the question directly instead of
+-- re-triggering the other table's RLS policies -- breaking the cycle for
+-- good. Every policy below that needs to reason about class/parent/teacher
+-- relationships across tables goes through one of these functions rather
+-- than an inline cross-table join, even where a given call site alone
+-- wouldn't currently recurse -- so the pattern stays uniform and no future
+-- edit can silently reintroduce the loop.
 -- =============================================================================
+
+create function public.is_teacher_of_class(p_class_id uuid)
+returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.classes c
+    where c.id = p_class_id and c.teacher_id = auth.uid()
+  );
+$$;
+
+create function public.is_class_member(p_class_id uuid)
+returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.class_students cs
+    where cs.class_id = p_class_id and cs.student_id = auth.uid()
+  );
+$$;
+
+create function public.is_teacher_of_student(p_student_id uuid)
+returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.class_students cs
+    join public.classes c on c.id = cs.class_id
+    where cs.student_id = p_student_id and c.teacher_id = auth.uid()
+  );
+$$;
+
+create function public.is_parent_of_student(p_student_id uuid)
+returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.parent_children pc
+    where pc.student_id = p_student_id and pc.parent_id = auth.uid()
+  );
+$$;
+
+create function public.is_parent_of_class_member(p_class_id uuid)
+returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.parent_children pc
+    join public.class_students cs on cs.student_id = pc.student_id
+    where pc.parent_id = auth.uid() and cs.class_id = p_class_id
+  );
+$$;
+
+grant execute on function public.is_teacher_of_class(uuid) to authenticated;
+grant execute on function public.is_class_member(uuid) to authenticated;
+grant execute on function public.is_teacher_of_student(uuid) to authenticated;
+grant execute on function public.is_parent_of_student(uuid) to authenticated;
+grant execute on function public.is_parent_of_class_member(uuid) to authenticated;
 
 alter table public.profiles            enable row level security;
 alter table public.classes             enable row level security;
@@ -50,25 +130,12 @@ create policy profiles_select_self on public.profiles
 -- A parent can read the profiles of their linked children.
 create policy profiles_select_parent_children on public.profiles
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.parent_children pc
-      where pc.student_id = profiles.id
-        and pc.parent_id = auth.uid()
-    )
-  );
+  using (public.is_parent_of_student(profiles.id));
 
 -- A teacher can read the profiles of students in a class they own.
 create policy profiles_select_teacher_students on public.profiles
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.class_students cs
-      join public.classes c on c.id = cs.class_id
-      where cs.student_id = profiles.id
-        and c.teacher_id = auth.uid()
-    )
-  );
+  using (public.is_teacher_of_student(profiles.id));
 
 -- The handle_new_user() trigger (SECURITY DEFINER) is what actually creates
 -- profile rows on sign-up and bypasses RLS to do it. This policy is a
@@ -99,25 +166,11 @@ create policy classes_select_teacher_owns on public.classes
 
 create policy classes_select_student_member on public.classes
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.class_students cs
-      where cs.class_id = classes.id
-        and cs.student_id = auth.uid()
-    )
-  );
+  using (public.is_class_member(classes.id));
 
 create policy classes_select_parent_of_member on public.classes
   for select to authenticated
-  using (
-    exists (
-      select 1
-      from public.parent_children pc
-      join public.class_students cs on cs.student_id = pc.student_id
-      where pc.parent_id = auth.uid()
-        and cs.class_id = classes.id
-    )
-  );
+  using (public.is_parent_of_class_member(classes.id));
 
 -- Only a teacher can create/manage classes, and only their own.
 create policy classes_insert_teacher on public.classes
@@ -142,13 +195,7 @@ create policy classes_delete_teacher_owns on public.classes
 
 create policy class_students_select_teacher on public.class_students
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.classes c
-      where c.id = class_students.class_id
-        and c.teacher_id = auth.uid()
-    )
-  );
+  using (public.is_teacher_of_class(class_students.class_id));
 
 create policy class_students_select_self on public.class_students
   for select to authenticated
@@ -156,30 +203,12 @@ create policy class_students_select_self on public.class_students
 
 create policy class_students_select_parent on public.class_students
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.parent_children pc
-      where pc.student_id = class_students.student_id
-        and pc.parent_id = auth.uid()
-    )
-  );
+  using (public.is_parent_of_student(class_students.student_id));
 
 create policy class_students_write_teacher on public.class_students
   for all to authenticated
-  using (
-    exists (
-      select 1 from public.classes c
-      where c.id = class_students.class_id
-        and c.teacher_id = auth.uid()
-    )
-  )
-  with check (
-    exists (
-      select 1 from public.classes c
-      where c.id = class_students.class_id
-        and c.teacher_id = auth.uid()
-    )
-  );
+  using (public.is_teacher_of_class(class_students.class_id))
+  with check (public.is_teacher_of_class(class_students.class_id));
 
 -- =============================================================================
 -- parent_children
@@ -246,24 +275,11 @@ create policy learn_completions_select_self on public.learn_completions
 
 create policy learn_completions_select_parent on public.learn_completions
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.parent_children pc
-      where pc.student_id = learn_completions.student_id
-        and pc.parent_id = auth.uid()
-    )
-  );
+  using (public.is_parent_of_student(learn_completions.student_id));
 
 create policy learn_completions_select_teacher on public.learn_completions
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.class_students cs
-      join public.classes c on c.id = cs.class_id
-      where cs.student_id = learn_completions.student_id
-        and c.teacher_id = auth.uid()
-    )
-  );
+  using (public.is_teacher_of_student(learn_completions.student_id));
 
 -- =============================================================================
 -- assessment_attempts
@@ -277,24 +293,11 @@ create policy assessment_attempts_select_self on public.assessment_attempts
 
 create policy assessment_attempts_select_parent on public.assessment_attempts
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.parent_children pc
-      where pc.student_id = assessment_attempts.student_id
-        and pc.parent_id = auth.uid()
-    )
-  );
+  using (public.is_parent_of_student(assessment_attempts.student_id));
 
 create policy assessment_attempts_select_teacher on public.assessment_attempts
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.class_students cs
-      join public.classes c on c.id = cs.class_id
-      where cs.student_id = assessment_attempts.student_id
-        and c.teacher_id = auth.uid()
-    )
-  );
+  using (public.is_teacher_of_student(assessment_attempts.student_id));
 
 -- =============================================================================
 -- points_transactions
@@ -313,24 +316,11 @@ create policy points_transactions_select_self on public.points_transactions
 
 create policy points_transactions_select_parent on public.points_transactions
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.parent_children pc
-      where pc.student_id = points_transactions.student_id
-        and pc.parent_id = auth.uid()
-    )
-  );
+  using (public.is_parent_of_student(points_transactions.student_id));
 
 create policy points_transactions_select_teacher on public.points_transactions
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.class_students cs
-      join public.classes c on c.id = cs.class_id
-      where cs.student_id = points_transactions.student_id
-        and c.teacher_id = auth.uid()
-    )
-  );
+  using (public.is_teacher_of_student(points_transactions.student_id));
 
 -- =============================================================================
 -- rewards
@@ -370,27 +360,9 @@ create policy reward_redemptions_select_self on public.reward_redemptions
 
 create policy reward_redemptions_select_parent on public.reward_redemptions
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.parent_children pc
-      where pc.student_id = reward_redemptions.student_id
-        and pc.parent_id = auth.uid()
-    )
-  );
+  using (public.is_parent_of_student(reward_redemptions.student_id));
 
 create policy reward_redemptions_update_parent on public.reward_redemptions
   for update to authenticated
-  using (
-    exists (
-      select 1 from public.parent_children pc
-      where pc.student_id = reward_redemptions.student_id
-        and pc.parent_id = auth.uid()
-    )
-  )
-  with check (
-    exists (
-      select 1 from public.parent_children pc
-      where pc.student_id = reward_redemptions.student_id
-        and pc.parent_id = auth.uid()
-    )
-  );
+  using (public.is_parent_of_student(reward_redemptions.student_id))
+  with check (public.is_parent_of_student(reward_redemptions.student_id));

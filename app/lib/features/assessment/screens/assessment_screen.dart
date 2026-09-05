@@ -46,7 +46,6 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
   bool _isListening = false;
   bool _showCorrection = false;
   bool _celebrating = false;
-  bool _finished = false;
 
   int _sessionPoints = 0;
   int _lastAwarded = 0;
@@ -217,7 +216,7 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
           emptyMessage: 'Wala pang laman ang unit na ito.',
           isEmpty: (data) => data.isEmpty,
           builder: (items) {
-            if (_finished || _index >= items.length) {
+            if (_index >= items.length) {
               return _buildSummary(items.length);
             }
             return Stack(

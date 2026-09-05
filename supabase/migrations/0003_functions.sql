@@ -308,15 +308,8 @@ as $$
 begin
   if not (
     p_student_id = auth.uid()
-    or exists (
-      select 1 from public.parent_children pc
-      where pc.parent_id = auth.uid() and pc.student_id = p_student_id
-    )
-    or exists (
-      select 1 from public.class_students cs
-      join public.classes c on c.id = cs.class_id
-      where cs.student_id = p_student_id and c.teacher_id = auth.uid()
-    )
+    or public.is_parent_of_student(p_student_id)
+    or public.is_teacher_of_student(p_student_id)
   ) then
     raise exception 'not authorized to view mastery for student %', p_student_id;
   end if;
