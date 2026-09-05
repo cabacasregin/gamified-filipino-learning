@@ -66,25 +66,30 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(path: '/signup', builder: (context, state) => const SignUpScreen()),
       GoRoute(path: '/', builder: (context, state) => const SizedBox.shrink()),
+      // Only the two bottom-nav destinations live inside StudentShell (which
+      // has its own AppBar + NavigationBar). Unit/learn/assessment are
+      // focused, full-screen flows pushed on top with their own AppBar, so
+      // they're deliberately top-level routes rather than ShellRoute
+      // children — nesting them under the shell would stack two AppBars.
+      GoRoute(
+        path: '/student/unit/:unitId',
+        builder: (context, state) => UnitModeScreen(
+          unitId: state.pathParameters['unitId']!,
+          unit: state.extra as CurriculumUnit?,
+        ),
+      ),
+      GoRoute(
+        path: '/student/unit/:unitId/learn',
+        builder: (context, state) => LearnScreen(unitId: state.pathParameters['unitId']!),
+      ),
+      GoRoute(
+        path: '/student/unit/:unitId/assessment',
+        builder: (context, state) => AssessmentScreen(unitId: state.pathParameters['unitId']!),
+      ),
       ShellRoute(
         builder: (context, state, child) => StudentShell(child: child),
         routes: [
           GoRoute(path: '/student/home', builder: (context, state) => const StudentHomeScreen()),
-          GoRoute(
-            path: '/student/unit/:unitId',
-            builder: (context, state) => UnitModeScreen(
-              unitId: state.pathParameters['unitId']!,
-              unit: state.extra as CurriculumUnit?,
-            ),
-          ),
-          GoRoute(
-            path: '/student/unit/:unitId/learn',
-            builder: (context, state) => LearnScreen(unitId: state.pathParameters['unitId']!),
-          ),
-          GoRoute(
-            path: '/student/unit/:unitId/assessment',
-            builder: (context, state) => AssessmentScreen(unitId: state.pathParameters['unitId']!),
-          ),
           GoRoute(path: '/student/rewards', builder: (context, state) => const RewardsScreen()),
         ],
       ),
