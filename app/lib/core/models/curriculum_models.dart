@@ -54,7 +54,7 @@ class CurriculumUnit extends Equatable {
       if (appFields.containsKey('description')) 'description': appFields['description'],
       if (appFields.containsKey('icon_emoji')) 'icon_emoji': appFields['icon_emoji'],
       if (appFields.containsKey('sort_order')) 'sort_order': appFields['sort_order'],
-      if (newSlug != null) 'slug': newSlug,
+      'slug': ?newSlug,
     };
   }
 

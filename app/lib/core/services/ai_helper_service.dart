@@ -27,11 +27,7 @@ class AiHelperService {
   }) async {
     final response = await _client.functions.invoke(
       'ai-helper',
-      body: {
-        'mode': mode.wireValue,
-        'prompt': prompt,
-        if (unitContext != null) 'unit_context': unitContext,
-      },
+      body: {'mode': mode.wireValue, 'prompt': prompt, 'unit_context': ?unitContext},
     );
     if (response.status != 200) {
       throw Exception('AI helper request failed (${response.status}): ${response.data}');
