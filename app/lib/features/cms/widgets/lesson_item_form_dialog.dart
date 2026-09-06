@@ -28,12 +28,12 @@ class _LessonItemFormDialogState extends State<_LessonItemFormDialog> {
   late final _english = TextEditingController(text: widget.existing?.englishText ?? '');
   late final _filipino = TextEditingController(text: widget.existing?.filipinoText ?? '');
   late final _emoji = TextEditingController(text: widget.existing?.emoji ?? '');
-  late final _variants =
-      TextEditingController(text: (widget.existing?.acceptedVariants ?? const []).join(', '));
+  late final _variants = TextEditingController(
+    text: (widget.existing?.acceptedVariants ?? const []).join(', '),
+  );
   late final _ttsOverride = TextEditingController(text: widget.existing?.ttsTextOverride ?? '');
   late final _imageUrl = TextEditingController(text: widget.existing?.imageUrl ?? '');
-  late final _sortOrder =
-      TextEditingController(text: (widget.existing?.sortOrder ?? 0).toString());
+  late final _sortOrder = TextEditingController(text: (widget.existing?.sortOrder ?? 0).toString());
 
   @override
   void dispose() {

@@ -26,11 +26,7 @@ class PointsBadge extends ConsumerWidget {
           const Text('⭐', style: TextStyle(fontSize: 16)),
           const SizedBox(width: 6),
           Text(
-            balance.when(
-              data: (v) => '$v pts',
-              loading: () => '…',
-              error: (_, _) => '—',
-            ),
+            balance.when(data: (v) => '$v pts', loading: () => '…', error: (_, _) => '—'),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],

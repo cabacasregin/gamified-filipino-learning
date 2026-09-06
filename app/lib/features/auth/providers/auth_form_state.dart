@@ -29,12 +29,9 @@ class AuthFormNotifier extends StateNotifier<({AuthStatus status, String? errorM
   }) async {
     state = (status: AuthStatus.submitting, errorMessage: null);
     try {
-      await ref.read(authRepositoryProvider).signUp(
-            email: email,
-            password: password,
-            fullName: fullName,
-            role: role,
-          );
+      await ref
+          .read(authRepositoryProvider)
+          .signUp(email: email, password: password, fullName: fullName, role: role);
       state = (status: AuthStatus.idle, errorMessage: null);
       return true;
     } catch (e) {
@@ -46,5 +43,5 @@ class AuthFormNotifier extends StateNotifier<({AuthStatus status, String? errorM
 
 final authFormProvider =
     StateNotifierProvider<AuthFormNotifier, ({AuthStatus status, String? errorMessage})>(
-  (ref) => AuthFormNotifier(ref),
-);
+      (ref) => AuthFormNotifier(ref),
+    );

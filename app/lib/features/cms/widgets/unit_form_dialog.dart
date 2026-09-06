@@ -5,10 +5,7 @@ import '../../../core/models/curriculum_models.dart';
 /// Create/edit dialog for a [CurriculumUnit]. Returns the map of field
 /// values on save (matching [CurriculumUnit.toMap]'s keys), or null if
 /// cancelled. The caller is responsible for calling the repository.
-Future<Map<String, dynamic>?> showUnitFormDialog(
-  BuildContext context, {
-  CurriculumUnit? existing,
-}) {
+Future<Map<String, dynamic>?> showUnitFormDialog(BuildContext context, {CurriculumUnit? existing}) {
   return showDialog<Map<String, dynamic>>(
     context: context,
     builder: (_) => _UnitFormDialog(existing: existing),
@@ -29,8 +26,7 @@ class _UnitFormDialogState extends State<_UnitFormDialog> {
   late final _titleFilipino = TextEditingController(text: widget.existing?.titleFilipino ?? '');
   late final _description = TextEditingController(text: widget.existing?.description ?? '');
   late final _iconEmoji = TextEditingController(text: widget.existing?.iconEmoji ?? '📘');
-  late final _sortOrder =
-      TextEditingController(text: (widget.existing?.sortOrder ?? 0).toString());
+  late final _sortOrder = TextEditingController(text: (widget.existing?.sortOrder ?? 0).toString());
 
   @override
   void dispose() {

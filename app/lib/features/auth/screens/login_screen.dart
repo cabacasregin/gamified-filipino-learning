@@ -49,23 +49,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 children: [
                   const Text('🇵🇭', style: TextStyle(fontSize: 56)),
                   const SizedBox(height: 8),
-                  Text(
-                    'Matuto ng Filipino',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
+                  Text('Matuto ng Filipino', style: Theme.of(context).textTheme.headlineSmall),
                   const Text('Gamified Filipino Learning'),
                   const SizedBox(height: 32),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
-                    validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (v) =>
+                        (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                    ),
                     validator: (v) => (v == null || v.length < 6) ? 'Minimum 6 characters' : null,
                   ),
                   const SizedBox(height: 24),

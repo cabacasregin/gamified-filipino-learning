@@ -14,8 +14,10 @@ final _childRewardsProvider = FutureProvider.family<List<Reward>, String>((ref, 
   return ref.watch(rewardsRepositoryProvider).fetchAllRewardsForStudent(childId);
 });
 
-final _childRedemptionsProvider =
-    FutureProvider.family<List<RewardRedemption>, String>((ref, childId) {
+final _childRedemptionsProvider = FutureProvider.family<List<RewardRedemption>, String>((
+  ref,
+  childId,
+) {
   return ref.watch(rewardsRepositoryProvider).fetchRedemptionsForStudent(childId);
 });
 
@@ -80,7 +82,10 @@ class _ChildPicker extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text('Piliin ang anak', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        Text(
+          'Piliin ang anak',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 12),
         for (final c in children)
           Card(
@@ -122,16 +127,20 @@ class _ChildRewardsManager extends ConsumerWidget {
     try {
       if (existing == null) {
         if (profile == null) return;
-        await ref.read(rewardsRepositoryProvider).createReward(Reward(
-              id: '',
-              parentId: profile.id,
-              studentId: childId,
-              name: result.name,
-              description: result.description,
-              emoji: result.emoji,
-              pointCost: result.pointCost,
-              active: true,
-            ));
+        await ref
+            .read(rewardsRepositoryProvider)
+            .createReward(
+              Reward(
+                id: '',
+                parentId: profile.id,
+                studentId: childId,
+                name: result.name,
+                description: result.description,
+                emoji: result.emoji,
+                pointCost: result.pointCost,
+                active: true,
+              ),
+            );
       } else {
         await ref.read(rewardsRepositoryProvider).updateReward(existing.id, {
           'name': result.name,
@@ -155,7 +164,10 @@ class _ChildRewardsManager extends ConsumerWidget {
         title: const Text('Tanggalin ang gantimpala?'),
         content: Text('Tatanggalin ang "${reward.name}". Hindi na ito puwedeng i-undo.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Kanselahin')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Kanselahin'),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () => Navigator.pop(context, true),
@@ -210,7 +222,8 @@ class _ChildRewardsManager extends ConsumerWidget {
               Expanded(
                 child: Text(
                   'Mga gantimpala para kay $childName',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -219,7 +232,9 @@ class _ChildRewardsManager extends ConsumerWidget {
           AsyncView<List<RewardRedemption>>(
             value: redemptionsAsync,
             builder: (redemptions) {
-              final pending = redemptions.where((r) => r.status == RedemptionStatus.pending).toList();
+              final pending = redemptions
+                  .where((r) => r.status == RedemptionStatus.pending)
+                  .toList();
               if (pending.isEmpty) return const SizedBox.shrink();
               return AsyncView<List<Reward>>(
                 value: rewardsAsync,
@@ -256,11 +271,15 @@ class _ChildRewardsManager extends ConsumerWidget {
             },
           ),
           const SizedBox(height: 20),
-          Text('Listahan ng gantimpala', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            'Listahan ng gantimpala',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           AsyncView<List<Reward>>(
             value: rewardsAsync,
-            emptyMessage: 'Wala ka pang nagawang gantimpala. Gumawa ng una gamit ang button sa ibaba.',
+            emptyMessage:
+                'Wala ka pang nagawang gantimpala. Gumawa ng una gamit ang button sa ibaba.',
             isEmpty: (data) => data.isEmpty,
             builder: (rewards) => Column(
               children: [
@@ -322,9 +341,7 @@ class _PendingRedemptionTile extends StatelessWidget {
         children: [
           Text(rewardEmoji ?? '🎁', style: const TextStyle(fontSize: 22)),
           const SizedBox(width: 8),
-          Expanded(
-            child: Text('${rewardName ?? 'Gantimpala'} · ${redemption.pointsSpent} points'),
-          ),
+          Expanded(child: Text('${rewardName ?? 'Gantimpala'} · ${redemption.pointsSpent} points')),
           IconButton(
             icon: const Icon(Icons.check_circle, color: AppColors.success),
             onPressed: onApprove,
@@ -428,7 +445,12 @@ class _RewardFormDialogState extends State<_RewardFormDialog> {
                       style: const TextStyle(fontSize: 24),
                       decoration: const InputDecoration(labelText: 'Emoji'),
                       maxLength: 2,
-                      buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+                      buildCounter: (
+                        context, {
+                        required currentLength,
+                        required isFocused,
+                        maxLength,
+                      }) => null,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -436,7 +458,8 @@ class _RewardFormDialogState extends State<_RewardFormDialog> {
                     child: TextFormField(
                       controller: _nameController,
                       decoration: const InputDecoration(labelText: 'Pangalan ng gantimpala'),
-                      validator: (v) => (v == null || v.trim().isEmpty) ? 'Kailangan ng pangalan' : null,
+                      validator: (v) =>
+                          (v == null || v.trim().isEmpty) ? 'Kailangan ng pangalan' : null,
                     ),
                   ),
                 ],

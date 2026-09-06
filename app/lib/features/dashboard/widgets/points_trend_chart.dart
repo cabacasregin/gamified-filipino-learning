@@ -72,10 +72,8 @@ class PointsTrendChart extends StatelessWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 32,
-                getTitlesWidget: (value, meta) => Text(
-                  value.toInt().toString(),
-                  style: const TextStyle(fontSize: 10),
-                ),
+                getTitlesWidget: (value, meta) =>
+                    Text(value.toInt().toString(), style: const TextStyle(fontSize: 10)),
               ),
             ),
             bottomTitles: AxisTitles(
@@ -113,7 +111,10 @@ class PointsTrendChart extends StatelessWidget {
               color: AppColors.primary,
               barWidth: 3,
               dotData: const FlDotData(show: false),
-              belowBarData: BarAreaData(show: true, color: AppColors.primary.withValues(alpha: 0.15)),
+              belowBarData: BarAreaData(
+                show: true,
+                color: AppColors.primary.withValues(alpha: 0.15),
+              ),
             ),
           ],
         ),

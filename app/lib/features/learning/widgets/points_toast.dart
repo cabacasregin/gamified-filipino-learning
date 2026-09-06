@@ -26,7 +26,11 @@ class PointsToast extends StatelessWidget {
             const SizedBox(width: 6),
             Text(
               '+$points points!',
-              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 16,
+              ),
             ),
           ],
         ),

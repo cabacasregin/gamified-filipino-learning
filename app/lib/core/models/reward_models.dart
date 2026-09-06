@@ -49,13 +49,13 @@ class Reward extends Equatable {
   }
 
   Map<String, dynamic> toMap() => {
-        'student_id': studentId,
-        'name': name,
-        'description': description,
-        'emoji': emoji,
-        'point_cost': pointCost,
-        'active': active,
-      };
+    'student_id': studentId,
+    'name': name,
+    'description': description,
+    'emoji': emoji,
+    'point_cost': pointCost,
+    'active': active,
+  };
 
   /// Translates an app-facing field map (as produced by [toMap] / the
   /// rewards UI, which uses `emoji`) into real `rewards` column names
@@ -70,8 +70,7 @@ class Reward extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [id, parentId, studentId, name, description, emoji, pointCost, active];
+  List<Object?> get props => [id, parentId, studentId, name, description, emoji, pointCost, active];
 }
 
 /// Mirrors `reward_redemptions`.

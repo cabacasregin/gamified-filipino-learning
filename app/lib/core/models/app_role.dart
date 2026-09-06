@@ -5,9 +5,6 @@ enum AppRole {
   parent;
 
   static AppRole fromString(String value) {
-    return AppRole.values.firstWhere(
-      (r) => r.name == value,
-      orElse: () => AppRole.student,
-    );
+    return AppRole.values.firstWhere((r) => r.name == value, orElse: () => AppRole.student);
   }
 }

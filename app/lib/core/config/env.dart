@@ -4,15 +4,9 @@
 /// (it's public by design, protected by RLS), but is still not hardcoded
 /// here so different environments (dev/staging/prod projects) can swap it.
 class Env {
-  static const supabaseUrl = String.fromEnvironment(
-    'SUPABASE_URL',
-    defaultValue: '',
-  );
+  static const supabaseUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: '');
 
-  static const supabaseAnonKey = String.fromEnvironment(
-    'SUPABASE_ANON_KEY',
-    defaultValue: '',
-  );
+  static const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: '');
 
   static bool get isConfigured => supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
 }

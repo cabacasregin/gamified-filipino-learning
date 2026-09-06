@@ -5,10 +5,7 @@ import '../../../core/models/curriculum_models.dart';
 /// Create/edit dialog for a [Lesson]. Returns the map of field values on
 /// save (matching [Lesson.toMap]'s keys, minus `unit_id` which the caller
 /// already knows), or null if cancelled.
-Future<Map<String, dynamic>?> showLessonFormDialog(
-  BuildContext context, {
-  Lesson? existing,
-}) {
+Future<Map<String, dynamic>?> showLessonFormDialog(BuildContext context, {Lesson? existing}) {
   return showDialog<Map<String, dynamic>>(
     context: context,
     builder: (_) => _LessonFormDialog(existing: existing),
@@ -26,8 +23,7 @@ class _LessonFormDialog extends StatefulWidget {
 class _LessonFormDialogState extends State<_LessonFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final _title = TextEditingController(text: widget.existing?.title ?? '');
-  late final _sortOrder =
-      TextEditingController(text: (widget.existing?.sortOrder ?? 0).toString());
+  late final _sortOrder = TextEditingController(text: (widget.existing?.sortOrder ?? 0).toString());
 
   @override
   void dispose() {
@@ -38,10 +34,9 @@ class _LessonFormDialogState extends State<_LessonFormDialog> {
 
   void _save() {
     if (!_formKey.currentState!.validate()) return;
-    Navigator.of(context).pop({
-      'title': _title.text.trim(),
-      'sort_order': int.tryParse(_sortOrder.text.trim()) ?? 0,
-    });
+    Navigator.of(
+      context,
+    ).pop({'title': _title.text.trim(), 'sort_order': int.tryParse(_sortOrder.text.trim()) ?? 0});
   }
 
   @override

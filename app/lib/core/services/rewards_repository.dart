@@ -66,8 +66,6 @@ class RewardsRepository {
 
   /// Parent reviewing a pending redemption for one of their children.
   Future<void> setRedemptionStatus(String redemptionId, RedemptionStatus status) async {
-    await _client
-        .from('reward_redemptions')
-        .update({'status': status.name}).eq('id', redemptionId);
+    await _client.from('reward_redemptions').update({'status': status.name}).eq('id', redemptionId);
   }
 }

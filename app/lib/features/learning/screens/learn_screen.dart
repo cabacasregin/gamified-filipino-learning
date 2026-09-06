@@ -110,9 +110,8 @@ class _LearnFlowState extends ConsumerState<_LearnFlow> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _submitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hindi na-save ang progress: $e')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Hindi na-save ang progress: $e')));
     }
   }
 
@@ -241,7 +240,8 @@ class _CompletionViewState extends State<_CompletionView> {
                 const SizedBox(height: 16),
                 Text(
                   'Magaling! (Great job!)',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -252,7 +252,10 @@ class _CompletionViewState extends State<_CompletionView> {
                 const SizedBox(height: 24),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  decoration: BoxDecoration(color: AppColors.points, borderRadius: BorderRadius.circular(28)),
+                  decoration: BoxDecoration(
+                    color: AppColors.points,
+                    borderRadius: BorderRadius.circular(28),
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -260,7 +263,11 @@ class _CompletionViewState extends State<_CompletionView> {
                       const SizedBox(width: 8),
                       Text(
                         '+${widget.sessionPoints} points ngayon',
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
                       ),
                     ],
                   ),
@@ -291,7 +298,12 @@ class _CompletionViewState extends State<_CompletionView> {
               minBlastForce: 8,
               gravity: 0.3,
               shouldLoop: false,
-              colors: const [AppColors.primary, AppColors.secondary, AppColors.success, AppColors.points],
+              colors: const [
+                AppColors.primary,
+                AppColors.secondary,
+                AppColors.success,
+                AppColors.points,
+              ],
             ),
           ),
         ),

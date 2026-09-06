@@ -29,11 +29,7 @@ class AuthRepository {
     if (userId == null) {
       throw AuthException('Sign up did not return a user id.');
     }
-    await _client.from('profiles').upsert({
-      'id': userId,
-      'role': role.name,
-      'full_name': fullName,
-    });
+    await _client.from('profiles').upsert({'id': userId, 'role': role.name, 'full_name': fullName});
   }
 
   Future<void> signOut() => _client.auth.signOut();

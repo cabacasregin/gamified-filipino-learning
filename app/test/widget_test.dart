@@ -20,9 +20,7 @@ class _MissingConfigAppForTest extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: Scaffold(
-        body: Center(child: Text('Missing Supabase configuration.')),
-      ),
+      home: Scaffold(body: Center(child: Text('Missing Supabase configuration.'))),
     );
   }
 }

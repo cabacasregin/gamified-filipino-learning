@@ -15,10 +15,7 @@ class SpeechRecognitionService {
   String? _filipinoLocaleId;
 
   Future<bool> init() async {
-    _available = await _stt.initialize(
-      onError: (_) {},
-      onStatus: (_) {},
-    );
+    _available = await _stt.initialize(onError: (_) {}, onStatus: (_) {});
     if (_available) {
       final locales = await _stt.locales();
       final match = locales.where((l) => l.localeId.toLowerCase().startsWith('fil')).toList();

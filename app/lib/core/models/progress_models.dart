@@ -96,8 +96,15 @@ class AssessmentAttempt extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [id, studentId, lessonItemId, transcript, isCorrect, pointsAwarded, attemptedAt];
+  List<Object?> get props => [
+    id,
+    studentId,
+    lessonItemId,
+    transcript,
+    isCorrect,
+    pointsAwarded,
+    attemptedAt,
+  ];
 }
 
 /// Mirrors `learn_completions`.

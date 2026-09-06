@@ -54,8 +54,10 @@ class TeacherDashboardScreen extends ConsumerWidget {
                               CircleAvatar(child: Text(studentName.isEmpty ? '?' : studentName[0])),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: Text(studentName,
-                                    style: Theme.of(context).textTheme.titleMedium),
+                                child: Text(
+                                  studentName,
+                                  style: Theme.of(context).textTheme.titleMedium,
+                                ),
                               ),
                               PointsBadge(studentId: studentId),
                             ],
@@ -72,9 +74,7 @@ class TeacherDashboardScreen extends ConsumerWidget {
                             alignment: Alignment.centerRight,
                             child: Text(
                               'Tap for full details',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
+                              style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(fontStyle: FontStyle.italic),
                             ),
                           ),

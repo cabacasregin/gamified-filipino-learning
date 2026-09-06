@@ -64,9 +64,14 @@ class _UnitCard extends StatelessWidget {
               Text(
                 unit.titleFilipino.isNotEmpty ? unit.titleFilipino : unit.title,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
-              Text(unit.title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+              Text(
+                unit.title,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ],
           ),
         ),

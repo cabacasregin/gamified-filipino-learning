@@ -20,12 +20,16 @@ class UnitLessonsScreen extends ConsumerWidget {
     final values = await showLessonFormDialog(context);
     if (values == null) return;
     try {
-      await ref.read(contentRepositoryProvider).createLesson(Lesson(
-            id: '',
-            unitId: unit.id,
-            title: values['title'] as String,
-            sortOrder: values['sort_order'] as int,
-          ));
+      await ref
+          .read(contentRepositoryProvider)
+          .createLesson(
+            Lesson(
+              id: '',
+              unitId: unit.id,
+              title: values['title'] as String,
+              sortOrder: values['sort_order'] as int,
+            ),
+          );
       ref.invalidate(cmsLessonsProvider(unit.id));
     } catch (e) {
       if (context.mounted) _showError(context, 'Could not create lesson', e);
@@ -50,7 +54,10 @@ class UnitLessonsScreen extends ConsumerWidget {
         title: const Text('Delete lesson?'),
         content: Text('This will delete "${lesson.title}" and all of its items.'),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
             onPressed: () => Navigator.of(context).pop(true),
@@ -112,7 +119,9 @@ class UnitLessonsScreen extends ConsumerWidget {
                       ],
                     ),
                     onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => LessonItemsScreen(unit: unit, lesson: lesson)),
+                      MaterialPageRoute(
+                        builder: (_) => LessonItemsScreen(unit: unit, lesson: lesson),
+                      ),
                     ),
                   ),
                 );

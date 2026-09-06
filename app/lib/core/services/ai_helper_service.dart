@@ -6,11 +6,11 @@ enum AiHelperMode { suggestLessonItems, generatePracticePrompt, translateCheck, 
 
 extension on AiHelperMode {
   String get wireValue => switch (this) {
-        AiHelperMode.suggestLessonItems => 'suggest_lesson_items',
-        AiHelperMode.generatePracticePrompt => 'generate_practice_prompt',
-        AiHelperMode.translateCheck => 'translate_check',
-        AiHelperMode.freeChat => 'free_chat',
-      };
+    AiHelperMode.suggestLessonItems => 'suggest_lesson_items',
+    AiHelperMode.generatePracticePrompt => 'generate_practice_prompt',
+    AiHelperMode.translateCheck => 'translate_check',
+    AiHelperMode.freeChat => 'free_chat',
+  };
 }
 
 /// Calls the `ai-helper` Supabase Edge Function, which proxies Gemini

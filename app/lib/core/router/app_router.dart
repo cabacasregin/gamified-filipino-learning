@@ -31,7 +31,8 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: authNotifier,
     redirect: (context, state) {
       final authAsync = ref.read(authStateChangesProvider);
-      final session = authAsync.valueOrNull?.session ?? ref.read(authRepositoryProvider).currentUser;
+      final session =
+          authAsync.valueOrNull?.session ?? ref.read(authRepositoryProvider).currentUser;
       final loggingIn = state.matchedLocation == '/login' || state.matchedLocation == '/signup';
 
       if (session == null) {
@@ -97,14 +98,23 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, child) => TeacherShell(child: child),
         routes: [
           GoRoute(path: '/teacher/cms', builder: (context, state) => const CmsHomeScreen()),
-          GoRoute(path: '/teacher/dashboard', builder: (context, state) => const TeacherDashboardScreen()),
+          GoRoute(
+            path: '/teacher/dashboard',
+            builder: (context, state) => const TeacherDashboardScreen(),
+          ),
         ],
       ),
       ShellRoute(
         builder: (context, state, child) => ParentShell(child: child),
         routes: [
-          GoRoute(path: '/parent/dashboard', builder: (context, state) => const ParentDashboardScreen()),
-          GoRoute(path: '/parent/rewards', builder: (context, state) => const ParentRewardsScreen()),
+          GoRoute(
+            path: '/parent/dashboard',
+            builder: (context, state) => const ParentDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/parent/rewards',
+            builder: (context, state) => const ParentRewardsScreen(),
+          ),
         ],
       ),
     ],

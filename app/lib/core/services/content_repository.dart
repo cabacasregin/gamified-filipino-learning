@@ -15,11 +15,7 @@ class ContentRepository {
   }
 
   Future<List<Lesson>> fetchLessons(String unitId) async {
-    final rows = await _client
-        .from('lessons')
-        .select()
-        .eq('unit_id', unitId)
-        .order('sort_order');
+    final rows = await _client.from('lessons').select().eq('unit_id', unitId).order('sort_order');
     return rows.map((r) => Lesson.fromMap(r)).toList();
   }
 

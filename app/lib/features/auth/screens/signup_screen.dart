@@ -29,7 +29,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    final ok = await ref.read(authFormProvider.notifier).signUp(
+    final ok = await ref
+        .read(authFormProvider.notifier)
+        .signUp(
           email: _emailController.text.trim(),
           password: _passwordController.text,
           fullName: _nameController.text.trim(),
@@ -56,9 +58,21 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 children: [
                   SegmentedButton<AppRole>(
                     segments: const [
-                      ButtonSegment(value: AppRole.student, label: Text('Learner'), icon: Icon(Icons.school)),
-                      ButtonSegment(value: AppRole.parent, label: Text('Parent'), icon: Icon(Icons.family_restroom)),
-                      ButtonSegment(value: AppRole.teacher, label: Text('Teacher'), icon: Icon(Icons.badge)),
+                      ButtonSegment(
+                        value: AppRole.student,
+                        label: Text('Learner'),
+                        icon: Icon(Icons.school),
+                      ),
+                      ButtonSegment(
+                        value: AppRole.parent,
+                        label: Text('Parent'),
+                        icon: Icon(Icons.family_restroom),
+                      ),
+                      ButtonSegment(
+                        value: AppRole.teacher,
+                        label: Text('Teacher'),
+                        icon: Icon(Icons.badge),
+                      ),
                     ],
                     selected: {_role},
                     onSelectionChanged: (s) => setState(() => _role = s.first),
@@ -66,21 +80,31 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(labelText: 'Full Name', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                      labelText: 'Full Name',
+                      border: OutlineInputBorder(),
+                    ),
                     validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
-                    validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (v) =>
+                        (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                    ),
                     validator: (v) => (v == null || v.length < 6) ? 'Minimum 6 characters' : null,
                   ),
                   const SizedBox(height: 24),

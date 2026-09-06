@@ -33,10 +33,8 @@ class LearnFlashcard extends StatelessWidget {
             Text(
               item.filipinoText,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
+              style: Theme.of(context).textTheme.headlineMedium
+                  ?.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary),
             ),
             const SizedBox(height: 6),
             Text(

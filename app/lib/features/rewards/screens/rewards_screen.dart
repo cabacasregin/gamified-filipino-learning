@@ -6,13 +6,14 @@ import '../../../core/providers/core_providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/async_view.dart';
 
-final _studentRewardsProvider =
-    FutureProvider.family<List<Reward>, String>((ref, studentId) {
+final _studentRewardsProvider = FutureProvider.family<List<Reward>, String>((ref, studentId) {
   return ref.watch(rewardsRepositoryProvider).fetchRewardsForStudent(studentId);
 });
 
-final _studentRedemptionsProvider =
-    FutureProvider.family<List<RewardRedemption>, String>((ref, studentId) {
+final _studentRedemptionsProvider = FutureProvider.family<List<RewardRedemption>, String>((
+  ref,
+  studentId,
+) {
   return ref.watch(rewardsRepositoryProvider).fetchRedemptionsForStudent(studentId);
 });
 
@@ -83,9 +84,7 @@ class RewardsScreen extends ConsumerWidget {
             emptyMessage: 'Wala ka pang na-redeem na gantimpala.',
             isEmpty: (data) => data.isEmpty,
             builder: (redemptions) => Column(
-              children: [
-                for (final r in redemptions.reversed) _RedemptionTile(redemption: r),
-              ],
+              children: [for (final r in redemptions.reversed) _RedemptionTile(redemption: r)],
             ),
           ),
         ],
@@ -105,7 +104,10 @@ class _WalletHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.points.withValues(alpha: 0.9), AppColors.secondary.withValues(alpha: 0.9)],
+          colors: [
+            AppColors.points.withValues(alpha: 0.9),
+            AppColors.secondary.withValues(alpha: 0.9),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -149,8 +151,14 @@ class _RewardCardState extends ConsumerState<_RewardCard> {
         title: const Text('I-redeem ang gantimpala?'),
         content: Text('I-redeem ang "${reward.name}" para sa ${reward.pointCost} points?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Kanselahin')),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('I-redeem')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Kanselahin'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('I-redeem'),
+          ),
         ],
       ),
     );
@@ -161,14 +169,16 @@ class _RewardCardState extends ConsumerState<_RewardCard> {
       await ref.read(rewardsRepositoryProvider).requestRedemption(reward.id);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Naipadala ang kahilingan para sa "${reward.name}"! Hintayin ang approval ng magulang mo.')),
+        SnackBar(
+          content: Text(
+            'Naipadala ang kahilingan para sa "${reward.name}"! Hintayin ang approval ng magulang mo.',
+          ),
+        ),
       );
       await widget.onRedeemed();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hindi na-redeem: $e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hindi na-redeem: $e')));
     } finally {
       if (mounted) setState(() => _redeeming = false);
     }
@@ -255,7 +265,10 @@ class _RedemptionTile extends StatelessWidget {
         title: Text('${redemption.pointsSpent} points'),
         subtitle: Text(_formatDate(redemption.requestedAt)),
         trailing: Chip(
-          label: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          label: Text(
+            label,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
           backgroundColor: color,
         ),
       ),

@@ -20,7 +20,9 @@ class CmsHomeScreen extends ConsumerWidget {
     final values = await showUnitFormDialog(context);
     if (values == null) return;
     try {
-      await ref.read(contentRepositoryProvider).createUnit(
+      await ref
+          .read(contentRepositoryProvider)
+          .createUnit(
             CurriculumUnit(
               id: '',
               title: values['title'] as String,
@@ -56,7 +58,10 @@ class CmsHomeScreen extends ConsumerWidget {
           'This will delete "${unit.title}" and all of its lessons and items. This cannot be undone.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
             onPressed: () => Navigator.of(context).pop(true),
@@ -75,9 +80,7 @@ class CmsHomeScreen extends ConsumerWidget {
   }
 
   void _showError(BuildContext context, String title, Object error) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$title: $error')),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$title: $error')));
   }
 
   @override
@@ -122,9 +125,9 @@ class CmsHomeScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => UnitLessonsScreen(unit: unit)),
-                    ),
+                    onTap: () =>
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (_) => UnitLessonsScreen(unit: unit))),
                   ),
                 );
               },

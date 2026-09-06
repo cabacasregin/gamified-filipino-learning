@@ -11,7 +11,9 @@ class ProgressRepository {
   /// Students visible to the current parent (id + display name).
   Future<List<Map<String, dynamic>>> fetchChildrenForParent() async {
     final links = await _client.from('parent_children').select('student_id');
-    final ids = List<Map<String, dynamic>>.from(links).map((r) => r['student_id'] as String).toList();
+    final ids = List<Map<String, dynamic>>.from(links)
+        .map((r) => r['student_id'] as String)
+        .toList();
     if (ids.isEmpty) return [];
     final profiles = await _client.from('profiles').select('id, full_name').inFilter('id', ids);
     return List<Map<String, dynamic>>.from(profiles);
@@ -20,7 +22,9 @@ class ProgressRepository {
   /// Students visible to the current teacher (their classes), id + name.
   Future<List<Map<String, dynamic>>> fetchStudentsForTeacher() async {
     final links = await _client.from('class_students').select('student_id');
-    final ids = List<Map<String, dynamic>>.from(links).map((r) => r['student_id'] as String).toList();
+    final ids = List<Map<String, dynamic>>.from(links)
+        .map((r) => r['student_id'] as String)
+        .toList();
     if (ids.isEmpty) return [];
     final profiles = await _client.from('profiles').select('id, full_name').inFilter('id', ids);
     return List<Map<String, dynamic>>.from(profiles);

@@ -30,10 +30,11 @@ class StudentShell extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Matuto ng Filipino'),
         actions: [
-          if (profile != null) Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Center(child: PointsBadge(studentId: profile.id)),
-          ),
+          if (profile != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Center(child: PointsBadge(studentId: profile.id)),
+            ),
         ],
       ),
       body: child,

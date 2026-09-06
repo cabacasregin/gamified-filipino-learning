@@ -17,7 +17,9 @@ final cmsLessonsProvider = FutureProvider.autoDispose.family<List<Lesson>, Strin
 
 /// Items within one lesson. Invalidate with the same [lessonId] after a
 /// mutation to refresh.
-final cmsLessonItemsProvider =
-    FutureProvider.autoDispose.family<List<LessonItem>, String>((ref, lessonId) {
+final cmsLessonItemsProvider = FutureProvider.autoDispose.family<List<LessonItem>, String>((
+  ref,
+  lessonId,
+) {
   return ref.watch(contentRepositoryProvider).fetchLessonItems(lessonId);
 });

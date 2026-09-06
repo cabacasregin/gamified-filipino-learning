@@ -21,17 +21,21 @@ class LessonItemsScreen extends ConsumerWidget {
     final values = await showLessonItemFormDialog(context);
     if (values == null) return;
     try {
-      await ref.read(contentRepositoryProvider).createLessonItem(LessonItem(
-            id: '',
-            lessonId: lesson.id,
-            englishText: values['english_text'] as String,
-            filipinoText: values['filipino_text'] as String,
-            emoji: values['emoji'] as String,
-            imageUrl: values['image_url'] as String?,
-            ttsTextOverride: values['tts_text'] as String?,
-            acceptedVariants: List<String>.from(values['accepted_variants'] as List),
-            sortOrder: values['sort_order'] as int,
-          ));
+      await ref
+          .read(contentRepositoryProvider)
+          .createLessonItem(
+            LessonItem(
+              id: '',
+              lessonId: lesson.id,
+              englishText: values['english_text'] as String,
+              filipinoText: values['filipino_text'] as String,
+              emoji: values['emoji'] as String,
+              imageUrl: values['image_url'] as String?,
+              ttsTextOverride: values['tts_text'] as String?,
+              acceptedVariants: List<String>.from(values['accepted_variants'] as List),
+              sortOrder: values['sort_order'] as int,
+            ),
+          );
       ref.invalidate(cmsLessonItemsProvider(lesson.id));
     } catch (e) {
       if (context.mounted) _showError(context, 'Could not create item', e);
@@ -56,7 +60,10 @@ class LessonItemsScreen extends ConsumerWidget {
         title: const Text('Delete item?'),
         content: Text('This will delete "${item.englishText} / ${item.filipinoText}".'),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
             onPressed: () => Navigator.of(context).pop(true),

@@ -36,12 +36,12 @@ class CurriculumUnit extends Equatable {
   }
 
   Map<String, dynamic> toMap() => {
-        'title': title,
-        'title_filipino': titleFilipino,
-        'description': description,
-        'icon_emoji': iconEmoji,
-        'sort_order': sortOrder,
-      };
+    'title': title,
+    'title_filipino': titleFilipino,
+    'description': description,
+    'icon_emoji': iconEmoji,
+    'sort_order': sortOrder,
+  };
 
   /// Translates an app-facing field map (as produced by [toMap] / the CMS
   /// unit form) into the actual `curriculum_units` column names. Pass
@@ -99,11 +99,7 @@ class Lesson extends Equatable {
     );
   }
 
-  Map<String, dynamic> toMap() => {
-        'unit_id': unitId,
-        'title': title,
-        'sort_order': sortOrder,
-      };
+  Map<String, dynamic> toMap() => {'unit_id': unitId, 'title': title, 'sort_order': sortOrder};
 
   @override
   List<Object?> get props => [id, unitId, title, sortOrder];
@@ -154,26 +150,26 @@ class LessonItem extends Equatable {
   }
 
   Map<String, dynamic> toMap() => {
-        'lesson_id': lessonId,
-        'english_text': englishText,
-        'filipino_text': filipinoText,
-        'emoji': emoji,
-        'image_url': imageUrl,
-        'tts_text': ttsTextOverride,
-        'accepted_variants': acceptedVariants,
-        'sort_order': sortOrder,
-      };
+    'lesson_id': lessonId,
+    'english_text': englishText,
+    'filipino_text': filipinoText,
+    'emoji': emoji,
+    'image_url': imageUrl,
+    'tts_text': ttsTextOverride,
+    'accepted_variants': acceptedVariants,
+    'sort_order': sortOrder,
+  };
 
   @override
   List<Object?> get props => [
-        id,
-        lessonId,
-        englishText,
-        filipinoText,
-        emoji,
-        imageUrl,
-        ttsTextOverride,
-        acceptedVariants,
-        sortOrder,
-      ];
+    id,
+    lessonId,
+    englishText,
+    filipinoText,
+    emoji,
+    imageUrl,
+    ttsTextOverride,
+    acceptedVariants,
+    sortOrder,
+  ];
 }

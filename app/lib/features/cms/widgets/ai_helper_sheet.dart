@@ -19,12 +19,7 @@ class AiHelperSheet extends StatelessWidget {
   final String? lessonId;
   final VoidCallback? onItemAdded;
 
-  const AiHelperSheet({
-    super.key,
-    this.initialUnitContext,
-    this.lessonId,
-    this.onItemAdded,
-  });
+  const AiHelperSheet({super.key, this.initialUnitContext, this.lessonId, this.onItemAdded});
 
   /// Opens the helper as a tall draggable bottom sheet.
   ///
@@ -125,10 +120,10 @@ class _SuggestItemsTab extends ConsumerStatefulWidget {
 }
 
 class _SuggestItemsTabState extends ConsumerState<_SuggestItemsTab> {
-  late final _unitContextController =
-      TextEditingController(text: widget.initialUnitContext ?? '');
+  late final _unitContextController = TextEditingController(text: widget.initialUnitContext ?? '');
   final _promptController = TextEditingController(
-    text: 'Suggest 5 new vocabulary items with English text, Filipino text, an emoji, '
+    text:
+        'Suggest 5 new vocabulary items with English text, Filipino text, an emoji, '
         'and 2-4 accepted speech-recognition variants each.',
   );
 
@@ -161,8 +156,9 @@ class _SuggestItemsTabState extends ConsumerState<_SuggestItemsTab> {
             '${_promptController.text}\n\nRespond with a JSON array of objects, each with keys '
             '"english_text", "filipino_text", "emoji", and "accepted_variants" (a list of strings). '
             'You may add a short explanation before or after the JSON.',
-        unitContext:
-            _unitContextController.text.trim().isEmpty ? null : _unitContextController.text.trim(),
+        unitContext: _unitContextController.text.trim().isEmpty
+            ? null
+            : _unitContextController.text.trim(),
       );
       if (!mounted) return;
       setState(() {
@@ -171,8 +167,9 @@ class _SuggestItemsTabState extends ConsumerState<_SuggestItemsTab> {
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _error =
-          "Couldn't reach the AI helper. It may be offline or misconfigured — please try again in a moment.");
+      setState(
+        () => _error = "Couldn't reach the AI helper. It may be offline or misconfigured — please try again in a moment.",
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -183,26 +180,25 @@ class _SuggestItemsTabState extends ConsumerState<_SuggestItemsTab> {
     if (lessonId == null) return;
     try {
       final repo = ref.read(contentRepositoryProvider);
-      await repo.createLessonItem(LessonItem(
-        id: '',
-        lessonId: lessonId,
-        englishText: (item['english_text'] ?? item['englishText'] ?? '').toString(),
-        filipinoText: (item['filipino_text'] ?? item['filipinoText'] ?? '').toString(),
-        emoji: (item['emoji'] ?? '❓').toString(),
-        acceptedVariants: _asStringList(item['accepted_variants'] ?? item['variants']),
-        sortOrder: index,
-      ));
+      await repo.createLessonItem(
+        LessonItem(
+          id: '',
+          lessonId: lessonId,
+          englishText: (item['english_text'] ?? item['englishText'] ?? '').toString(),
+          filipinoText: (item['filipino_text'] ?? item['filipinoText'] ?? '').toString(),
+          emoji: (item['emoji'] ?? '❓').toString(),
+          acceptedVariants: _asStringList(item['accepted_variants'] ?? item['variants']),
+          sortOrder: index,
+        ),
+      );
       if (!mounted) return;
       setState(() => _added.add(index));
       widget.onItemAdded?.call();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Added to this lesson.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Added to this lesson.')));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not add item: $e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not add item: $e')));
     }
   }
 
@@ -235,14 +231,14 @@ class _SuggestItemsTabState extends ConsumerState<_SuggestItemsTab> {
             onPressed: _loading ? null : _submit,
             icon: _loading
                 ? const SizedBox(
-                    width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
                 : const Icon(Icons.auto_awesome),
             label: const Text('Suggest items'),
           ),
-          if (_error != null) ...[
-            const SizedBox(height: 16),
-            _ErrorBanner(_error!),
-          ],
+          if (_error != null) ...[const SizedBox(height: 16), _ErrorBanner(_error!)],
           if (_parsedItems != null && _parsedItems!.isNotEmpty) ...[
             const SizedBox(height: 16),
             Text('Suggestions', style: Theme.of(context).textTheme.labelLarge),
@@ -252,9 +248,7 @@ class _SuggestItemsTabState extends ConsumerState<_SuggestItemsTab> {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
                   'Open this helper from inside a lesson to add suggestions directly.',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
+                  style: Theme.of(context).textTheme.bodySmall
                       ?.copyWith(fontStyle: FontStyle.italic),
                 ),
               ),
@@ -275,12 +269,12 @@ class _SuggestItemsTabState extends ConsumerState<_SuggestItemsTab> {
                   trailing: widget.lessonId == null
                       ? null
                       : _added.contains(i)
-                          ? const Icon(Icons.check_circle, color: Colors.green)
-                          : IconButton(
-                              icon: const Icon(Icons.add_circle_outline),
-                              tooltip: 'Add to this lesson',
-                              onPressed: () => _addItem(i, _parsedItems![i]),
-                            ),
+                      ? const Icon(Icons.check_circle, color: Colors.green)
+                      : IconButton(
+                          icon: const Icon(Icons.add_circle_outline),
+                          tooltip: 'Add to this lesson',
+                          onPressed: () => _addItem(i, _parsedItems![i]),
+                        ),
                 ),
               ),
           ],
@@ -376,7 +370,8 @@ class _TranslateCheckTabState extends ConsumerState<_TranslateCheckTab> {
       final service = ref.read(aiHelperServiceProvider);
       final text = await service.ask(
         mode: AiHelperMode.translateCheck,
-        prompt: 'English: ${_englishController.text.trim()}\n'
+        prompt:
+            'English: ${_englishController.text.trim()}\n'
             'Filipino: ${_filipinoController.text.trim()}\n\n'
             'Is this translation accurate and age-appropriate for the MATATAG Filipino '
             'curriculum (Kindergarten-Grade 3)? If not, explain why and suggest a correction.',
@@ -385,8 +380,9 @@ class _TranslateCheckTabState extends ConsumerState<_TranslateCheckTab> {
       setState(() => _response = text);
     } catch (_) {
       if (!mounted) return;
-      setState(() => _error =
-          "Couldn't reach the AI helper. It may be offline or misconfigured — please try again in a moment.");
+      setState(
+        () => _error = "Couldn't reach the AI helper. It may be offline or misconfigured — please try again in a moment.",
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -413,7 +409,10 @@ class _TranslateCheckTabState extends ConsumerState<_TranslateCheckTab> {
             onPressed: _loading ? null : _submit,
             icon: _loading
                 ? const SizedBox(
-                    width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
                 : const Icon(Icons.fact_check),
             label: const Text('Check translation'),
           ),
@@ -474,8 +473,9 @@ class _FreeChatTabState extends ConsumerState<_FreeChatTab> {
       setState(() => _response = text);
     } catch (_) {
       if (!mounted) return;
-      setState(() => _error =
-          "Couldn't reach the AI helper. It may be offline or misconfigured — please try again in a moment.");
+      setState(
+        () => _error = "Couldn't reach the AI helper. It may be offline or misconfigured — please try again in a moment.",
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -502,7 +502,10 @@ class _FreeChatTabState extends ConsumerState<_FreeChatTab> {
             onPressed: _loading ? null : _submit,
             icon: _loading
                 ? const SizedBox(
-                    width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
                 : const Icon(Icons.send),
             label: const Text('Ask'),
           ),
@@ -543,7 +546,10 @@ class _ErrorBanner extends StatelessWidget {
           Icon(Icons.error_outline, color: Theme.of(context).colorScheme.onErrorContainer),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(message, style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer)),
+            child: Text(
+              message,
+              style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+            ),
           ),
         ],
       ),

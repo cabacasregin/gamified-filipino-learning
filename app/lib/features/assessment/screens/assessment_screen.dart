@@ -14,8 +14,7 @@ import '../../../core/utils/answer_matcher.dart';
 import '../../../core/widgets/async_view.dart';
 
 /// Items for one unit's spoken-assessment session, in curriculum order.
-final _unitAssessmentItemsProvider =
-    FutureProvider.family<List<LessonItem>, String>((ref, unitId) {
+final _unitAssessmentItemsProvider = FutureProvider.family<List<LessonItem>, String>((ref, unitId) {
   return ref.watch(contentRepositoryProvider).fetchUnitItems(unitId);
 });
 
@@ -52,8 +51,9 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
   int _lastAwarded = 0;
   final Set<String> _correctItemIds = {};
 
-  late final ConfettiController _confetti =
-      ConfettiController(duration: const Duration(milliseconds: 900));
+  late final ConfettiController _confetti = ConfettiController(
+    duration: const Duration(milliseconds: 900),
+  );
 
   @override
   void initState() {
@@ -121,7 +121,9 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
 
     AssessmentResult result = AssessmentResult(isCorrect: clientGuessedCorrect, pointsAwarded: 0);
     try {
-      result = await ref.read(pointsRepositoryProvider).recordAssessmentAttempt(
+      result = await ref
+          .read(pointsRepositoryProvider)
+          .recordAssessmentAttempt(
             lessonItemId: item.id,
             transcript: transcript ?? '',
             clientGuessedCorrect: clientGuessedCorrect,
@@ -268,7 +270,8 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               Text(message, textAlign: TextAlign.center),
@@ -306,9 +309,7 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
           const SizedBox(height: 12),
           Text(
             item.englishText,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
+            style: Theme.of(context).textTheme.titleMedium
                 ?.copyWith(color: Colors.black54, fontStyle: FontStyle.italic),
           ),
           const SizedBox(height: 8),
@@ -343,7 +344,9 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
               color: _isListening ? AppColors.error : AppColors.primary,
               boxShadow: [
                 BoxShadow(
-                  color: (_isListening ? AppColors.error : AppColors.primary).withValues(alpha: 0.35),
+                  color: (_isListening ? AppColors.error : AppColors.primary).withValues(
+                    alpha: 0.35,
+                  ),
                   blurRadius: _isListening ? 24 : 12,
                   spreadRadius: _isListening ? 6 : 2,
                 ),
@@ -398,7 +401,11 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
         const SizedBox(height: 8),
         Text(
           item.filipinoText,
-          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppColors.primary),
+          style: const TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
+          ),
         ),
         const SizedBox(height: 4),
         TextButton.icon(
@@ -414,10 +421,7 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
         ),
         if (canSkip) ...[
           const SizedBox(height: 8),
-          TextButton(
-            onPressed: _skip,
-            child: const Text('Laktawan muna (Skip for now)'),
-          ),
+          TextButton(onPressed: _skip, child: const Text('Laktawan muna (Skip for now)')),
         ],
       ],
     );
@@ -435,7 +439,8 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
             const SizedBox(height: 16),
             Text(
               'Tapos na ang Assessment!',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Text('$correct / $total tama', style: Theme.of(context).textTheme.titleLarge),
@@ -447,7 +452,11 @@ class _AssessmentScreenState extends ConsumerState<AssessmentScreen> {
                 const SizedBox(width: 6),
                 Text(
                   '+$_sessionPoints points',
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.points),
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.points,
+                  ),
                 ),
               ],
             ),

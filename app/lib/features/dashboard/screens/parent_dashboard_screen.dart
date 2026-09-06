@@ -39,9 +39,7 @@ class ParentDashboardScreen extends ConsumerWidget {
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
-                    Expanded(
-                      child: StudentProgressView(studentId: child['id'] as String),
-                    ),
+                    Expanded(child: StudentProgressView(studentId: child['id'] as String)),
                   ],
                 );
               }

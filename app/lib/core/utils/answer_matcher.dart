@@ -16,10 +16,7 @@ class AnswerMatcher {
   static const double _fuzzyThreshold = 0.75;
 
   static bool isCorrect(String transcript, LessonItem item) {
-    final candidates = <String>{
-      item.filipinoText,
-      ...item.acceptedVariants,
-    };
+    final candidates = <String>{item.filipinoText, ...item.acceptedVariants};
     final normalizedTranscript = _normalize(transcript);
     if (normalizedTranscript.isEmpty) return false;
 
@@ -70,9 +67,11 @@ class AnswerMatcher {
         final deletionCost = previousRow[j + 1] + 1;
         final insertionCost = currentRow[j] + 1;
         final substitutionCost = previousRow[j] + (a[i] == b[j] ? 0 : 1);
-        currentRow[j + 1] = [deletionCost, insertionCost, substitutionCost].reduce(
-          (v, e) => v < e ? v : e,
-        );
+        currentRow[j + 1] = [
+          deletionCost,
+          insertionCost,
+          substitutionCost,
+        ].reduce((v, e) => v < e ? v : e);
       }
       previousRow = currentRow;
     }

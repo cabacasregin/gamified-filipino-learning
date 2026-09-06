@@ -39,7 +39,11 @@ class UnitMasteryList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final row in visible) ...[
-          _UnitMasteryRow(row: row, fraction: _asFraction(row['accuracy']), color: _colorFor(_asFraction(row['accuracy']), context)),
+          _UnitMasteryRow(
+            row: row,
+            fraction: _asFraction(row['accuracy']),
+            color: _colorFor(_asFraction(row['accuracy']), context),
+          ),
           const SizedBox(height: 10),
         ],
         if (maxRows != null && rows.length > maxRows!)
@@ -75,7 +79,10 @@ class _UnitMasteryRow extends StatelessWidget {
             Expanded(
               child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
             ),
-            Text(percentLabel, style: TextStyle(fontWeight: FontWeight.bold, color: color)),
+            Text(
+              percentLabel,
+              style: TextStyle(fontWeight: FontWeight.bold, color: color),
+            ),
           ],
         ),
         const SizedBox(height: 4),

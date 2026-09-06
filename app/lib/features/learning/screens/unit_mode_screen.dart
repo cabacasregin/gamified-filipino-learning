@@ -28,9 +28,14 @@ class UnitModeScreen extends StatelessWidget {
                 Text(
                   unit!.titleFilipino,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                Text(unit!.title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
+                Text(
+                  unit!.title,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ],
               const SizedBox(height: 32),
               Text(
