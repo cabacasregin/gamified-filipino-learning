@@ -1,0 +1,33 @@
+# Minimal local-dev config for the Supabase CLI (`supabase init` style).
+# Project ref is intentionally omitted here -- run `supabase link` once you
+# have a real project, which writes project_id into .supabase/ locally
+# rather than committing it to this file.
+project_id = "gamified-filipino-learning"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000"]
+jwt_expiry = 3600
+enable_signup = true
+
+[edge_runtime]
+enabled = true
+
+[functions.ai-helper]
+verify_jwt = true

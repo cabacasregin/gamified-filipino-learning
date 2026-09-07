@@ -1,0 +1,7 @@
+{
+  "name": "filipino-learn-web",
+  "private": true,
+  "scripts": {
+    "vercel-build": "bash vercel-build.sh"
+  }
+}
